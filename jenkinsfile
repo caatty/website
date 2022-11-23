@@ -1,0 +1,53 @@
+pipeline {
+    agent {
+        label 'maven'
+    }
+
+    stages {
+        stage('cloning from github') {
+            steps {
+                sh '''
+                rm -rf website
+                git clone https://github.com/caatty/website.git
+                cd website
+                '''
+            }
+        }
+        stage('removing docker container and docker image') {
+            steps {
+                sh '''
+                docker rm -f $(docker ps -a -q)
+                docker image rm nahid787/website
+                '''
+            }
+        }
+        stage('building docker images') {
+            steps {
+            sh '''
+            docker build /home/nahid/jenkins/workspace/git/ -t nahid787/website
+            '''
+            }
+        }
+        stage('pushing docker image') {
+            steps {
+                sh '''
+                docker push nahid787/website
+                '''
+            }
+        }
+        stage('pushing on test environment') {
+            steps {
+                sh '''
+                docker container run -it -p 82:80 -d nahid787/website
+                '''
+            }
+        }
+        stage('pushing on production environment') {
+            steps {
+                sh '''
+                ansible-playbook /home/nahid/jenkins/workspace/pipelineforwebsite/website/pushtoprod.yml
+                '''
+            }
+        }
+    }
+}
