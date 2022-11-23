@@ -7,7 +7,7 @@ pipeline {
         stage('cloning from github') {
             steps {
                 sh '''
-                rm -rf website
+                rm -rf website/
                 git clone https://github.com/caatty/website.git
                 cd website
                 '''
@@ -24,7 +24,7 @@ pipeline {
         stage('building docker images') {
             steps {
             sh '''
-            docker build /home/nahid/jenkins/workspace/git/ -t nahid787/website
+            docker build /home/nahid/jenkins/workspace/pipelineforwebsite/website/ -t nahid787/website
             '''
             }
         }
