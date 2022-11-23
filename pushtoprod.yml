@@ -1,0 +1,6 @@
+---
+- name: push to production server
+  hosts: prod
+  tasks:
+     - name: push shell command for deploying on production server
+       shell: docker rm -f $(docker ps -a -q) && docker image rm nahid787/website && docker container run -it -p 82:80 -d nahid787/website
